@@ -3,7 +3,7 @@ using KRouter.Core.Routing.Models;
 
 namespace KRouter.Core.Routing.Algorithms
 {
-    public class LeeMazeRouter : IRoutingAlgorithm
+    public class LeeMazeRouter
     {
         public RoutingPath? FindPath(RoutingNode start, RoutingNode end, RoutingGraph graph, CostFunction costFunction)
         {

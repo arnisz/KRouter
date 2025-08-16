@@ -6,11 +6,6 @@ using KRouter.Core.Geometry;
 
 namespace KRouter.Core.Routing.Algorithms
 {
-    public interface IRoutingAlgorithm
-    {
-        RoutingPath? FindPath(RoutingNode start, RoutingNode end, RoutingGraph graph, CostFunction costFunction);
-    }
-
     public class AStarRouter : IRoutingAlgorithm
     {
         private class NodeInfo : IComparable<NodeInfo>

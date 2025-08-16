@@ -1,6 +1,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4)](https://dotnet.microsoft.com)
-[![Build Status](https://github.com/yourusername/krouter/workflows/CI/badge.svg)](https://github.com/yourusername/krouter/actions)
+[![Build Status](https://github.com/arnisz/krouter/workflows/CI/badge.svg)](https://github.com/arnisz/krouter/actions)
 
 KRouter ist ein moderner, DRC-konformer PCB-Autorouter für KiCad, entwickelt in C#/.NET 8. Er bietet deterministisches Routing mit vollständiger Design-Rule-Compliance und eine benutzerfreundliche GUI.
 
@@ -22,10 +22,10 @@ KRouter ist ein moderner, DRC-konformer PCB-Autorouter für KiCad, entwickelt in
 - KiCad 6.0 oder höher
 
 ### Download
-Laden Sie die neueste Version von der [Releases-Seite](https://github.com/yourusername/krouter/releases) herunter.
+Laden Sie die neueste Version von der [Releases-Seite](https://github.com/arnisz/krouter/releases) herunter.
 
 ### Build from Source
 ```bash
-git clone https://github.com/yourusername/krouter.git
+git clone https://github.com/arnisz/krouter.git
 cd krouter
 dotnet build -c Release

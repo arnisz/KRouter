@@ -86,7 +86,7 @@ KiCad Integration:
   2. Run: krouter route --in board.dsn --out board.ses
   3. Import SES to KiCad: File → Import → Specctra Session
 
-For more information, visit: https://github.com/yourusername/krouter
+For more information, visit: https://github.com/arnisz/krouter
 ");
             });
             rootCommand.AddCommand(helpCommand);

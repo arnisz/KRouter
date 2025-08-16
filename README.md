@@ -29,3 +29,31 @@ Laden Sie die neueste Version von der [Releases-Seite](https://github.com/arnisz
 git clone https://github.com/arnisz/krouter.git
 cd krouter
 dotnet build -c Release
+```
+
+## <a id="english"></a> English
+
+ - 🚀 Features
+ - ✅ 100% DRC-Compliant: No rule violations during routing
+ - 🎯 Deterministic: Reproducible results with seeds
+ - ⚡ Performant: Multithreading support for large boards
+ - 🔧 Flexible: Customizable profiles (Fast/Balanced/Quality)
+ - 📊 Transparent: Detailed reports and visualizations
+ - 🖥️ Cross-Platform: Windows, Linux, macOS
+
+## 📦 Installation
+
+### Prerequisites
+ - .NET 8 SDK or Runtime
+ - KiCad 6.0 or higher
+
+### Download
+Download the latest version from the Releases page.
+
+### Build from Source
+```bash
+
+git clone https://github.com/arnisz/krouter.git
+cd krouter
+dotnet build -c Release
+```

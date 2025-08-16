@@ -56,18 +56,27 @@ namespace KRouter.Core.Routing
             }
 
             // Preferred direction (horizontal on even layers, vertical on odd)
+            // Instead of rewarding movement in the preferred direction by reducing
+            // cost (which could lead to negative costs), we only add a penalty when
+            // the movement is primarily in the non-preferred direction. This keeps
+            // the base distance cost intact while still biasing the search toward
+            // preferred orientations.
             if (from.Layer == to.Layer)
             {
                 var dx = Math.Abs(to.Position.X - from.Position.X);
                 var dy = Math.Abs(to.Position.Y - from.Position.Y);
-                
-                if (from.LayerIndex % 2 == 0 && dx > dy)
+
+                // Even layers favour horizontal movement. Penalize vertical-dominant
+                // moves on these layers.
+                if (from.LayerIndex % 2 == 0 && dy > dx)
                 {
-                    cost -= PreferredDirectionWeight * distance;
+                    cost += PreferredDirectionWeight * distance;
                 }
-                else if (from.LayerIndex % 2 == 1 && dy > dx)
+                // Odd layers favour vertical movement. Penalize horizontal-dominant
+                // moves on these layers.
+                else if (from.LayerIndex % 2 == 1 && dx > dy)
                 {
-                    cost -= PreferredDirectionWeight * distance;
+                    cost += PreferredDirectionWeight * distance;
                 }
             }
 

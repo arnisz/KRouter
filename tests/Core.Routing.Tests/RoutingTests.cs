@@ -63,10 +63,14 @@ namespace KRouter.Tests.Core.Routing
             var router = new AStarRouter();
             var costFunction = new CostFunction();
 
-            for (long y = -1_000_000; y <= 1_000_000; y += 100_000)
-            {
-                graph.AddObstacle(new Point2D(500_000, y), "F.Cu");
-            }
+            // Create a solid vertical wall across the entire routing area so that
+            // no path from start to end exists on the given layer. Using a line
+            // ensures every grid point along the wall is marked as an obstacle.
+            var blockingLine = new Line2D(
+                new Point2D(500_000, 0),
+                new Point2D(500_000, 10_000_000)
+            );
+            graph.AddObstacleLine(blockingLine, "F.Cu");
 
             var start = new RoutingNode(new Point2D(0, 0), "F.Cu", 0);
             var end = new RoutingNode(new Point2D(1_000_000, 0), "F.Cu", 0);

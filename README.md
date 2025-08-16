@@ -31,6 +31,17 @@ cd krouter
 dotnet build -c Release
 ```
 
+## 🛠️ CLI
+
+Ein minimales CLI steht für Headless-Workflows zur Verfügung.
+
+```bash
+./build-cli.sh
+./dist/linux/krouter route --in board.dsn --out board.ses
+```
+
+Weitere Details finden sich in [docs/CLI.md](docs/CLI.md).
+
 ## <a id="english"></a> English
 
  - 🚀 Features
@@ -57,3 +68,14 @@ git clone https://github.com/arnisz/krouter.git
 cd krouter
 dotnet build -c Release
 ```
+
+## 🛠️ CLI
+
+A minimal CLI is available for headless workflows.
+
+```bash
+./build-cli.sh
+./dist/linux/krouter route --in board.dsn --out board.ses
+```
+
+See [docs/CLI.md](docs/CLI.md) for details.

@@ -52,7 +52,7 @@ namespace KRouter.Tests.Core.Routing
             var path = router.FindPath(start, end, graph, costFunction);
 
             Assert.NotNull(path);
-            Assert.True(path!.Nodes.Any(n => n.Position.Y != 0));
+            Assert.Contains(path!.Nodes, n => n.Position.Y != 0);
         }
 
         [Fact]

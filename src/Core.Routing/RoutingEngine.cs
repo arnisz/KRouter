@@ -109,31 +109,29 @@ namespace KRouter.Core.Routing
             if (net.Pins.Count < 2)
                 return true;
 
-            var path = new RoutingPath(net.Name);
-            
-            for (int i = 0; i < net.Pins.Count - 1; i++)
+            return await Task.Run(() =>
             {
-                var startNode = new RoutingNode(net.Pins[i], layers[0], 0);
-                var endNode = new RoutingNode(net.Pins[i + 1], layers[0], 0);
-
-                var segment = _algorithm.FindPath(startNode, endNode, _graph!, _costFunction);
-                
-                if (segment == null)
-                    return false;
-
-                if (path.Nodes.Count > 0 && path.Nodes.Last().Equals(segment.Nodes.First()))
+                var path = new RoutingPath(net.Name);
+                for (int i = 0; i < net.Pins.Count - 1; i++)
                 {
-                    path.Nodes.AddRange(segment.Nodes.Skip(1));
+                    var startNode = new RoutingNode(net.Pins[i], layers[0], 0);
+                    var endNode = new RoutingNode(net.Pins[i + 1], layers[0], 0);
+                    var segment = _algorithm.FindPath(startNode, endNode, _graph!, _costFunction);
+                    if (segment == null)
+                        return false;
+                    if (path.Nodes.Count > 0 && path.Nodes.Last().Equals(segment.Nodes.First()))
+                    {
+                        path.Nodes.AddRange(segment.Nodes.Skip(1));
+                    }
+                    else
+                    {
+                        path.Nodes.AddRange(segment.Nodes);
+                    }
                 }
-                else
-                {
-                    path.Nodes.AddRange(segment.Nodes);
-                }
-            }
-
-            net.Route = path;
-            net.IsRouted = true;
-            return true;
+                net.Route = path;
+                net.IsRouted = true;
+                return true;
+            });
         }
 
         private async Task<bool> RipUpAndReroute(Net failedNet, List<Net> allNets, List<string> layers)

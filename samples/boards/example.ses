@@ -1,6 +1,6 @@
 
-(session TESTUS.ses
-  (base_design TESTUS.dsn)
+(session example.ses
+  (base_design example.dsn)
   (placement
     (resolution um 10)
     (component "Package_TO_SOT_SMD:SOT-23"

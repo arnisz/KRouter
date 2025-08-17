@@ -1,5 +1,5 @@
 # Sample DSN file
-(pcb C:\Users\arnol\OneDrive\Dokumente\kicad\TESTUS\TESTUS.dsn
+(pcb C:\Users\arnol\OneDrive\Dokumente\kicad\TESTUS\example.dsn
   (parser
     (string_quote ")
     (space_in_quoted_tokens on)

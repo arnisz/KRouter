@@ -9,7 +9,7 @@ namespace KRouter.Cli
     /// Entry point for the KRouter command-line interface.
     /// Provides minimal routing commands for KiCad integration.
     /// </summary>
-    class Program
+    internal class Program
     {
         /// <summary>
         /// Main entry point. Configures available commands and options.
@@ -150,8 +150,8 @@ For more information, visit: https://github.com/arnisz/krouter
                 Console.WriteLine();
                 Console.WriteLine();
 
-                // Generate simple SES output
-                var sesContent = GenerateSimpleSES(input.Name.Replace(".dsn", ""), netCount);
+                // Generate KiCad-compatible SES output
+                var sesContent = GenerateKiCadCompatibleSES(input.Name.Replace(".dsn", ""), netCount);
                 await File.WriteAllTextAsync(output.FullName, sesContent);
 
                 // Report results
@@ -195,51 +195,43 @@ For more information, visit: https://github.com/arnisz/krouter
         }
 
         /// <summary>
-        /// Generates a minimal SES file for demonstration.
+        /// Generates a KiCad-compatible SES file for demonstration.
         /// </summary>
         /// <param name="designName">Design name.</param>
         /// <param name="netCount">Number of nets.</param>
         /// <returns>SES file content.</returns>
-        private static string GenerateSimpleSES(string designName, int netCount)
+        internal static string GenerateKiCadCompatibleSES(string designName, int netCount)
         {
             return $@"(session ""{designName}.ses""
   (base_design ""{designName}.dsn"")
   (placement
     (resolution mm 1000000)
   )
-  (was_is
-    (routes
-      (resolution mm 1000000)
-      (parser
-        (host_cad ""KRouter"")
-        (host_version ""1.0.0"")
+  (routing
+    (resolution mm 1000000)
+    (parser
+      (host_cad ""KRouter"")
+      (host_version ""1.0.0"")
+    )
+    (library
+      (padstack ""Via[0-1]_600:300_um""
+        (shape (circle F.Cu 600 0 0))
+        (shape (circle B.Cu 600 0 0))
+        (attach off)
       )
-      (library_out
-        (padstack ""Via[0-1]_600:300_um""
-          (shape (circle F.Cu 600 0 0))
-          (shape (circle B.Cu 600 0 0))
-          (attach off)
+    )
+    (network
+      (net ""GND""
+        (wire
+          (path F.Cu 250
+            50000 75000
+            80000 75000
+          )
+          (type protect)
         )
       )
-      (network_out
-        (net ""GND""
-          (wire
-            (path F.Cu 250
-              50000 75000
-              80000 75000
-            )
-            (type protect)
-          )
-        )
-        (net ""VCC""
-          (wire
-            (path F.Cu 250
-              120000 75000
-              100000 75000
-            )
-            (type protect)
-          )
-        )
+      (via ""Via[0-1]_600:300_um"" 100000 75000
+        (net ""VCC"")
       )
     )
   )

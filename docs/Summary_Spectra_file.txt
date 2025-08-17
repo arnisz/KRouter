@@ -1,0 +1,180 @@
+﻿1) Überblick: DSN vs. SES
+
+DSN (Design File) enthält die vollständige Beschreibung des Designs: Einheiten/Auflösung, Board-Geometrie, Layer, Bibliothek (Padstacks & Footprints/„images“), Netzliste, Regeln sowie Platzierungen (ohne Leiterbahnen). Die Top-Level-Grammatik beginnt mit (pcb ...) und listet u. a. structure, placement, library, network, rule. 
+
+SES (Session File) enthält Sitzungsdaten und Routing-Ergebnis (Drähte/Vias, Fixierungen, Änderungen gegenüber DSN). Top-Level beginnt mit (session ...) und kann Historie, Änderungen, wiring (Leiterbahnen/Vias) u. a. beschreiben. 
+
+2) Syntax-Grundlagen (Essentials)
+
+S-Expressions mit Schlüsselworten und Argumentlisten, z. B. (net N1 (pins U1 1 U2 5)).
+
+Parser-Optionen können im DSN gesetzt werden, u. a. string_quote, space_in_quoted_tokens, case_sensitive, write_resolution. Damit lassen sich Leerzeichen oder Klammern in IDs (z. B. DATA_BUS(0)) sicher transportieren.
+
+IDs mit Leerzeichen oder Klammern: per string_quote ein Quote-Zeichen definieren und space_in_quoted_tokens on setzen. Beispiel: select net 'DATA_BUS(0)'.
+
+3) Einheiten & Auflösung
+
+resolution: globale Datenbankauflösung + Maßeinheit; z. B. (resolution mil 10) bedeutet Einheiten in mil, Datenbankschrittweite 0,1 mil. Ohne Angabe: Standard ist inch und 2540000. Wichtig: Im DSN vor structure setzen. 
+
+unit: lokale Überschreibung der Einheit in einer Sektion (z. B. library in inch, Rest in mm). Gilt nur für die jeweilige Sektion. 
+
+Numerische Grenzen & Rundung: Auflösung × Maximalgröße darf 2³¹ nicht überschreiten; bei sehr kleinen Maßen genügend Nullen im resolution-Wert vorsehen, um Rundungsfehler zu vermeiden. 
+
+In SES beschreibt resolution die Abbildung von Realmaßen zu DB-Units (Mapping zurück in den Host). 
+
+4) structure: Board, Lagen, Kanten
+
+Boardgrenzen:
+
+(boundary (rect pcb ...)) – Gesamtrahmen; (boundary (rect signal ...)) – Leiterzonen. Reservierte Namen pcb/signal nicht als Layernamen benutzen.
+
+Polygone/Pfade müssen geschlossen sein; bei place_boundary muss der erste/letzte Punkt zusammenpassen (sonst wird automatisch geschlossen). 
+
+Layer: in structure definiert (Signal/Plane/…); siehe layer_descriptor. 
+
+Keepouts, Regionen etc. sind zulässige Kindelemente von structure. 
+
+5) library: Padstacks & Footprints (images)
+
+Padstacks definieren Bohrung/Metallisierung und form-/lagenspezifische Kupferformen (Kreise/Polygone pro Layer). 
+
+Images (Footprints) beschreiben die Bauteilgeometrie (Umrisse, Referenz/Value-Texte) und Pins mit Padstack-Zuweisungen & Koordinaten. 
+
+unit kann am Beginn der library gesetzt werden, falls Footprints in anderer Einheit vorliegen. 
+
+6) placement: Bauteile auf dem Board
+
+Inhalt: (placement [unit|resolution] [place_control] {component_instance}) – alle Instanzen mit Lage, Seite, Rotation.
+
+Komponenteninstanz: (component <image_id> {<placement_reference>}). component_id entspricht dem RefDes. 
+
+Platzierungsgrenze: (place_boundary (...)) – Bereich, in dem Bauteile erlaubt sind; muss innerhalb der signal-Boundary liegen (Beispielkaskade pcb/signal/place_boundary).
+
+Status-Flags (nur Session/geschriebene Placement-Dateien): status added|deleted|substituted. 
+
+7) network: Netze, Pins, From-To
+
+Nets deklarieren Namen, Pinlisten, optional Topologie/Komponentenreihenfolgen usw. (u. a. comp_order zur groben Sequenzierung). 
+
+Beispiel: (net "N$1" (pins U1 1 U2 5) (comp_order U1 U2)). (Semantik von comp_order: kürzeste Verbindungen zwischen den genannten Bauteilen). 
+
+8) rule: Breiten, Abstände, Lagen/Vias – und Prioritäten
+
+Routing-Regeln (Auswahl):
+
+width: Leiterbahnbreiten per Klasse/Objekt/Lagen.
+
+clearance/spacing: Abstände/Isolationsmaße.
+
+use_layer/use_via: zulässige Lagen & Via-Typen.
+Diese Regel-Deskriptoren sind im „route rule“-Bereich definiert.
+
+Platzierungsregeln (place_rule) steuern u. a. erlaubte Seite/Orientierung/Abstände für pin, smd, area. 
+
+Regel-Hierarchien & Vorrang (Routing/Placement): die Spec beschreibt explizite Hierarchien, nach denen spezifischere Regeln allgemeinere überschreiben. Das ist wichtig, um z. B. Klassen-Weiten vs. Netzausnahmen korrekt aufzulösen.
+
+9) wiring (v. a. in SES): Leiterbahnen, Vias, Formen
+
+SES enthält typischerweise (wiring {wire|via|…}). Der wiring_descriptor umfasst Drahtelemente, Vias, ggf. Biegungen/Arcs und Zugehörigkeit zu Netzen/Layern/Breiten. 
+
+wire/via: spezifische Deskriptoren (u. a. wire_descriptor, via_descriptor) definieren Geometrie (Pfade/Arcs), Layer, Netznamen, Breite bzw. Via-Typ.
+
+Route-/Wire-Dateien: die Spec unterscheidet „route file“ und „session file“; gängig ist das SES für vollständige Sitzungen/Ergebnisse. 
+
+10) „Minimaler“ DSN-Skelett & SES-Skelett (Illustration)
+
+⚠️ Hinweis: Dies dient der Orientierung – genaue Token/Argumentreihenfolge je Deskriptor bitte der Spec entnehmen (Abschnitte oben verlinkt).
+
+DSN (stark verkürzt):
+
+(pcb "board_name"
+  (parser
+    (string_quote ") (space_in_quoted_tokens on) (case_sensitive off)
+    (host_cad KICAD) (host_version "8"))
+  (resolution mm 100000)           ; 0.01 mm Raster  ⟵ siehe Auflösung
+  (structure
+    (boundary (rect pcb 0 0 150000 100000))
+    (boundary (rect signal 1000 1000 149000 99000))
+    ; ... Layer-Definitionen …
+  )
+  (library
+    ; padstack-Definitionen
+    ; image (Footprint) mit pins …
+  )
+  (placement
+    ; component-Instanzen mit Lage/Seite/Rotation …
+  )
+  (network
+    ; net(...) mit pins / comp_order / topology …
+  )
+  (rule
+    ; width / clearance / use_layer / use_via …
+  )
+)
+
+
+SES (stark verkürzt):
+
+(session "board_name"
+  (resolution mm 100000)
+  (self (file "board_name.dsn"))
+  (wiring
+    ; wire(...)  ; mit net, layer, path/arc, width
+    ; via(...)   ; mit net, via-typ, position
+  )
+)
+
+11) KiCad-Roundtrip: praktische Zuordnung
+
+Layer: KiCad-Kupferlagen (z. B. F.Cu, B.Cu) → layer_descriptor in structure. Achtet auf reservierte Namen pcb/signal nur für Grenzen, nicht als Layernamen. 
+
+Footprints: KiCad-Footprints → image (+ pin mit Padstack). Koordinaten/Rotation/Seite in placement.
+
+Vias/Bohrungen: Via-Typen → padstack (Bohrung, Kupferformen pro Layer). 
+
+Netze: KiCad-Nets → network/net (Pinlisten, optional Reihenfolgen/Topologien). 
+
+Regeln: Net-Klassen/Breiten/Abstände → rule (width/clearance/…); spezifische Ausnahmen weiter unten in der Hierarchie definieren.
+
+Routing-Ergebnis: vom Autorouter zurück → SES mit wiring (wire/via) und optional Platzierungs-/Statusänderungen.
+
+12) Validierung & typische Stolpersteine
+
+Rundung & Grenzen: Auflösung so wählen, dass kleinste Maße präzise darstellbar sind – und 2³¹-Grenze beachten. 
+
+Geschlossene Grenzen: place_boundary/Pfade müssen geschlossen sein; liegt innerhalb der signal-Boundary. 
+
+Einheitensprünge: Falls die library in anderen Einheiten vorliegt: per (unit ...) lokal setzen – sonst interpretiert der Router Koordinaten falsch. 
+
+IDs mit Sonderzeichen/Leerzeichen: parser-Optionen setzen (string_quote, space_in_quoted_tokens).
+
+13) Implementations-Checkliste (Exporter/Importer)
+
+Parser-Header schreiben/lesen: string_quote, space_in_quoted_tokens, case_sensitive, host_cad, write_resolution. 
+
+Auflösung & Einheiten korrekt im DSN setzen; in SES entsprechend mappen.
+
+structure: boundary pcb/signal, Layerliste, (optionale) Keepouts/Regionen.
+
+library: vollständige Padstacks, anschließend Footprints/image mit Pins.
+
+placement: jede Instanz (component ...) mit Referenz, Position, Seite, Rotation; optional place_boundary.
+
+network: Nets mit Pinlisten; optional comp_order/Topologie. 
+
+rule: mindestens width/clearance und via/layer-Nutzung; Hierarchie beachten.
+
+SES-Import: wiring → Tracks/Arcs/Vias ins KiCad-Board übernehmen; Status/Änderungen beachten.
+
+Hinweis zur Quelle und Urheberrecht
+
+Diese Dokumentation ist eine eigenständige Zusammenfassung und Interpretation der Dateiformat-Spezifikation des Cadence SPECCTRA® Design Language Reference, Product Version 10.0, Mai 2000.
+
+Alle Rechte an der Originaldokumentation liegen bei Cadence Design Systems, Inc.
+Die vorliegende Darstellung dient ausschließlich als technische Orientierung und erhebt keinen Anspruch auf Vollständigkeit oder Originalität der Spezifikation.
+
+Für verbindliche Details und vollständige Informationen ist ausschließlich die offizielle Dokumentation von Cadence maßgeblich.
+
+Quelle: cadence SPECCTRA® Design Language Reference
+Product Version 10.0
+May 2000

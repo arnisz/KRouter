@@ -1,0 +1,5 @@
+C:\Users\arnol\AppData\Local\Temp\krouter_cli_test\c9fc3ba208c24cdba1fc8ae98b081133\krouter.pdb
+C:\Users\arnol\AppData\Local\Temp\krouter_cli_test\c9fc3ba208c24cdba1fc8ae98b081133\Core.Routing.pdb
+C:\Users\arnol\AppData\Local\Temp\krouter_cli_test\c9fc3ba208c24cdba1fc8ae98b081133\Core.DRC.pdb
+C:\Users\arnol\AppData\Local\Temp\krouter_cli_test\c9fc3ba208c24cdba1fc8ae98b081133\Core.Geometry.pdb
+C:\Users\arnol\AppData\Local\Temp\krouter_cli_test\c9fc3ba208c24cdba1fc8ae98b081133\krouter.exe

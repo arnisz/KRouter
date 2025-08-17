@@ -1,0 +1,12 @@
+C:\Users\arnol\source\repos\KRouter\src\Core.DRC\bin\Release\net8.0\Core.DRC.deps.json
+C:\Users\arnol\source\repos\KRouter\src\Core.DRC\bin\Release\net8.0\Core.DRC.dll
+C:\Users\arnol\source\repos\KRouter\src\Core.DRC\bin\Release\net8.0\Core.DRC.pdb
+C:\Users\arnol\source\repos\KRouter\src\Core.DRC\obj\Release\net8.0\Core.DRC.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\arnol\source\repos\KRouter\src\Core.DRC\obj\Release\net8.0\Core.DRC.AssemblyInfoInputs.cache
+C:\Users\arnol\source\repos\KRouter\src\Core.DRC\obj\Release\net8.0\Core.DRC.AssemblyInfo.cs
+C:\Users\arnol\source\repos\KRouter\src\Core.DRC\obj\Release\net8.0\Core.DRC.csproj.CoreCompileInputs.cache
+C:\Users\arnol\source\repos\KRouter\src\Core.DRC\obj\Release\net8.0\Core.DRC.sourcelink.json
+C:\Users\arnol\source\repos\KRouter\src\Core.DRC\obj\Release\net8.0\Core.DRC.dll
+C:\Users\arnol\source\repos\KRouter\src\Core.DRC\obj\Release\net8.0\refint\Core.DRC.dll
+C:\Users\arnol\source\repos\KRouter\src\Core.DRC\obj\Release\net8.0\Core.DRC.pdb
+C:\Users\arnol\source\repos\KRouter\src\Core.DRC\obj\Release\net8.0\ref\Core.DRC.dll

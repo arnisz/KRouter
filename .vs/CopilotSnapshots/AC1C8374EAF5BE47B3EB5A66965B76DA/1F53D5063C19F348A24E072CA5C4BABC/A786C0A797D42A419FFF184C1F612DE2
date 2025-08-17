@@ -1,0 +1,57 @@
+﻿using System.Collections.Generic;
+using KRouter.Core.Routing.Models;
+
+namespace KRouter.Core.Routing.Algorithms
+{
+    public class LeeMazeRouter : IRoutingAlgorithm
+    {
+        public RoutingPath? FindPath(RoutingNode start, RoutingNode end, RoutingGraph graph, CostFunction costFunction)
+        {
+            var queue = new Queue<(RoutingNode node, int distance)>();
+            var visited = new Dictionary<RoutingNode, int>();
+            var parent = new Dictionary<RoutingNode, RoutingNode>();
+
+            queue.Enqueue((start, 0));
+            visited[start] = 0;
+
+            while (queue.Count > 0)
+            {
+                var (current, distance) = queue.Dequeue();
+
+                if (current.Equals(end))
+                {
+                    return ReconstructPath(start, end, parent);
+                }
+
+                foreach (var neighbor in graph.GetNeighbors(current))
+                {
+                    var newDistance = distance + 1;
+                    
+                    if (!visited.ContainsKey(neighbor) || visited[neighbor] > newDistance)
+                    {
+                        visited[neighbor] = newDistance;
+                        parent[neighbor] = current;
+                        queue.Enqueue((neighbor, newDistance));
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private RoutingPath ReconstructPath(RoutingNode start, RoutingNode end, Dictionary<RoutingNode, RoutingNode> parent)
+        {
+            var path = new RoutingPath();
+            var current = end;
+
+            while (!current.Equals(start))
+            {
+                path.Nodes.Insert(0, current);
+                current = parent[current];
+            }
+            path.Nodes.Insert(0, start);
+
+            return path;
+        }
+    }
+}

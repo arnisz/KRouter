@@ -1,0 +1,128 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using KRouter.Core.Routing.Models;
+using KRouter.Core.Geometry;
+
+namespace KRouter.Core.Routing.Algorithms
+{
+    public interface IRoutingAlgorithm
+    {
+        RoutingPath? FindPath(RoutingNode start, RoutingNode end, RoutingGraph graph, CostFunction costFunction);
+    }
+
+    public class AStarRouter : IRoutingAlgorithm
+    {
+        private class NodeInfo : IComparable<NodeInfo>
+        {
+            public RoutingNode Node { get; set; } = null!;
+            public double GCost { get; set; }
+            public double HCost { get; set; }
+            public double FCost => GCost + HCost;
+            public NodeInfo? Parent { get; set; }
+
+            public int CompareTo(NodeInfo? other)
+            {
+                if (other == null) return -1;
+                return FCost.CompareTo(other.FCost);
+            }
+        }
+
+        public RoutingPath? FindPath(RoutingNode start, RoutingNode end, RoutingGraph graph, CostFunction costFunction)
+        {
+            var openSet = new SortedSet<NodeInfo>(Comparer<NodeInfo>.Create((a, b) =>
+            {
+                var result = a.FCost.CompareTo(b.FCost);
+                if (result == 0) result = a.Node.GetHashCode().CompareTo(b.Node.GetHashCode());
+                return result;
+            }));
+            
+            var closedSet = new HashSet<RoutingNode>();
+            var nodeMap = new Dictionary<RoutingNode, NodeInfo>();
+
+            var startInfo = new NodeInfo
+            {
+                Node = start,
+                GCost = 0,
+                HCost = CalculateHeuristic(start, end),
+                Parent = null
+            };
+
+            openSet.Add(startInfo);
+            nodeMap[start] = startInfo;
+
+            while (openSet.Count > 0)
+            {
+                var current = openSet.Min!;
+                openSet.Remove(current);
+
+                if (current.Node.Equals(end))
+                {
+                    return ReconstructPath(current);
+                }
+
+                closedSet.Add(current.Node);
+
+                foreach (var neighbor in graph.GetNeighbors(current.Node))
+                {
+                    if (closedSet.Contains(neighbor))
+                        continue;
+
+                    var tentativeG = current.GCost + costFunction.CalculateCost(
+                        current.Node,
+                        neighbor,
+                        current.Parent?.Node
+                    );
+
+                    if (nodeMap.ContainsKey(neighbor))
+                    {
+                        var neighborInfo = nodeMap[neighbor];
+                        if (tentativeG < neighborInfo.GCost)
+                        {
+                            openSet.Remove(neighborInfo);
+                            neighborInfo.GCost = tentativeG;
+                            neighborInfo.Parent = current;
+                            openSet.Add(neighborInfo);
+                        }
+                    }
+                    else
+                    {
+                        var neighborInfo = new NodeInfo
+                        {
+                            Node = neighbor,
+                            GCost = tentativeG,
+                            HCost = CalculateHeuristic(neighbor, end),
+                            Parent = current
+                        };
+                        nodeMap[neighbor] = neighborInfo;
+                        openSet.Add(neighborInfo);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private double CalculateHeuristic(RoutingNode from, RoutingNode to)
+        {
+            var distance = from.Position.ManhattanDistanceTo(to.Position);
+            var layerDiff = Math.Abs(from.LayerIndex - to.LayerIndex);
+            return distance + (layerDiff * 50000);
+        }
+
+        private RoutingPath ReconstructPath(NodeInfo endNode)
+        {
+            var path = new RoutingPath();
+            var current = endNode;
+
+            while (current != null)
+            {
+                path.Nodes.Insert(0, current.Node);
+                current = current.Parent!;
+            }
+
+            path.TotalCost = endNode.GCost;
+            return path;
+        }
+    }
+}

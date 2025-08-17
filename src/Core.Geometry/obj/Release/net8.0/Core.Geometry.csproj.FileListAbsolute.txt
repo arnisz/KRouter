@@ -1,0 +1,12 @@
+C:\Users\arnol\source\repos\KRouter\src\Core.Geometry\bin\Release\net8.0\Core.Geometry.deps.json
+C:\Users\arnol\source\repos\KRouter\src\Core.Geometry\bin\Release\net8.0\Core.Geometry.dll
+C:\Users\arnol\source\repos\KRouter\src\Core.Geometry\bin\Release\net8.0\Core.Geometry.pdb
+C:\Users\arnol\source\repos\KRouter\src\Core.Geometry\obj\Release\net8.0\Core.Geometry.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\arnol\source\repos\KRouter\src\Core.Geometry\obj\Release\net8.0\Core.Geometry.AssemblyInfoInputs.cache
+C:\Users\arnol\source\repos\KRouter\src\Core.Geometry\obj\Release\net8.0\Core.Geometry.AssemblyInfo.cs
+C:\Users\arnol\source\repos\KRouter\src\Core.Geometry\obj\Release\net8.0\Core.Geometry.csproj.CoreCompileInputs.cache
+C:\Users\arnol\source\repos\KRouter\src\Core.Geometry\obj\Release\net8.0\Core.Geometry.sourcelink.json
+C:\Users\arnol\source\repos\KRouter\src\Core.Geometry\obj\Release\net8.0\Core.Geometry.dll
+C:\Users\arnol\source\repos\KRouter\src\Core.Geometry\obj\Release\net8.0\refint\Core.Geometry.dll
+C:\Users\arnol\source\repos\KRouter\src\Core.Geometry\obj\Release\net8.0\Core.Geometry.pdb
+C:\Users\arnol\source\repos\KRouter\src\Core.Geometry\obj\Release\net8.0\ref\Core.Geometry.dll

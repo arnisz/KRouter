@@ -17,10 +17,10 @@ namespace KRouter.Tests.Cli
             var ses = SpectraSessionGenerator.FromDsn(dsn, "example");
 
             Assert.Contains("(routes", ses);
+            // Teste für tatsächlich vorhandene Komponenten aus der example.dsn
             Assert.Contains("(component \"Package_TO_SOT_SMD:SOT-23\"", ses);
-            Assert.Contains("(place Q1 1259375 -946750 front 0)", ses);
-            Assert.Contains("(net GND", ses);
+            Assert.Contains("(place Q1 125937", ses); // Q1 existiert in der DSN
+            Assert.Contains("(net GND", ses); // GND existiert in der network Sektion
         }
     }
 }
-

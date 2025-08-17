@@ -1,0 +1,17 @@
+(session example.ses
+  (base_design example.dsn)
+  (placement
+    (resolution mm 100000)
+  )
+  (was_is
+  )
+  (routes
+    (resolution mm 100000)
+    (parser
+      (host_cad "KRouter")
+      (host_version "1.0.0")
+    )
+    (network
+    )
+  )
+)

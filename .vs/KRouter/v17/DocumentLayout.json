@@ -1,0 +1,75 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\arnol\\source\\repos\\KRouter\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{BCDBB644-A125-4B3F-A07B-616D9E5E592A}|src\\Core.Routing\\Core.Routing.csproj|c:\\users\\arnol\\source\\repos\\krouter\\src\\core.routing\\algorithms\\leemazerouter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{BCDBB644-A125-4B3F-A07B-616D9E5E592A}|src\\Core.Routing\\Core.Routing.csproj|solutionrelative:src\\core.routing\\algorithms\\leemazerouter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{BCDBB644-A125-4B3F-A07B-616D9E5E592A}|src\\Core.Routing\\Core.Routing.csproj|c:\\users\\arnol\\source\\repos\\krouter\\src\\core.routing\\algorithms\\astarrouter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{BCDBB644-A125-4B3F-A07B-616D9E5E592A}|src\\Core.Routing\\Core.Routing.csproj|solutionrelative:src\\core.routing\\algorithms\\astarrouter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{BCDBB644-A125-4B3F-A07B-616D9E5E592A}|src\\Core.Routing\\Core.Routing.csproj|c:\\users\\arnol\\source\\repos\\krouter\\src\\core.routing\\algorithms\\iroutingalgorithm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{BCDBB644-A125-4B3F-A07B-616D9E5E592A}|src\\Core.Routing\\Core.Routing.csproj|solutionrelative:src\\core.routing\\algorithms\\iroutingalgorithm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "IRoutingAlgorithm.cs",
+              "DocumentMoniker": "C:\\Users\\arnol\\source\\repos\\KRouter\\src\\Core.Routing\\Algorithms\\IRoutingAlgorithm.cs",
+              "RelativeDocumentMoniker": "src\\Core.Routing\\Algorithms\\IRoutingAlgorithm.cs",
+              "ToolTip": "C:\\Users\\arnol\\source\\repos\\KRouter\\src\\Core.Routing\\Algorithms\\IRoutingAlgorithm.cs",
+              "RelativeToolTip": "src\\Core.Routing\\Algorithms\\IRoutingAlgorithm.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-16T22:06:34.124Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "LeeMazeRouter.cs",
+              "DocumentMoniker": "C:\\Users\\arnol\\source\\repos\\KRouter\\src\\Core.Routing\\Algorithms\\LeeMazeRouter.cs",
+              "RelativeDocumentMoniker": "src\\Core.Routing\\Algorithms\\LeeMazeRouter.cs",
+              "ToolTip": "C:\\Users\\arnol\\source\\repos\\KRouter\\src\\Core.Routing\\Algorithms\\LeeMazeRouter.cs",
+              "RelativeToolTip": "src\\Core.Routing\\Algorithms\\LeeMazeRouter.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-16T21:56:31.089Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AStarRouter.cs",
+              "DocumentMoniker": "C:\\Users\\arnol\\source\\repos\\KRouter\\src\\Core.Routing\\Algorithms\\AStarRouter.cs",
+              "RelativeDocumentMoniker": "src\\Core.Routing\\Algorithms\\AStarRouter.cs",
+              "ToolTip": "C:\\Users\\arnol\\source\\repos\\KRouter\\src\\Core.Routing\\Algorithms\\AStarRouter.cs",
+              "RelativeToolTip": "src\\Core.Routing\\Algorithms\\AStarRouter.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-16T21:55:29.685Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

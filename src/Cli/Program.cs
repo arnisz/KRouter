@@ -131,16 +131,5 @@ namespace KRouter.Cli
             }
             return await rootCommand.InvokeAsync(args);
         }
-
-        /// <summary>
-        /// Generates a KiCad-compatible SES file for demonstration.
-        /// </summary>
-        /// <param name="designName">Design name.</param>
-        /// <param name="netCount">Number of nets.</param>
-        /// <returns>SES file content.</returns>
-        internal static string GenerateKiCadCompatibleSES(string designName, int netCount)
-        {
-            return $"(session \"{designName}.ses\"\n  (base_design \"{designName}.dsn\")\n  (placement\n    (resolution mm 1000000)\n  )\n  (routing\n    (resolution mm 1000000)\n    (parser\n      (host_cad \"KRouter\")\n      (host_version \"1.0.0\")\n    )\n    (library\n      (padstack \"Via[0-1]_600:300_um\"\n        (shape (circle F.Cu 600 0 0))\n        (shape (circle B.Cu 600 0 0))\n        (attach off)\n      )\n    )\n    (network\n      (net \"GND\"\n        (wire\n          (path F.Cu 250\n            50000 75000\n            80000 75000\n          )\n          (type protect)\n        )\n      )\n      (via \"Via[0-1]_600:300_um\" 100000 75000\n        (net \"VCC\")\n      )\n    )\n  )\n)";
-        }
     }
 }

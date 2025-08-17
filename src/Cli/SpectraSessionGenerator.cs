@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using KRouter.Core.Routing;
 
 namespace KRouter.Cli
 {
@@ -54,6 +55,56 @@ namespace KRouter.Cli
                 sb.AppendLine($"      (net {net})");
             }
             sb.AppendLine("    )");
+            sb.AppendLine("  )");
+            sb.AppendLine(")");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Generates a Specctra SES file from routing results.
+        /// </summary>
+        /// <param name="dsn">Parsed DSN data.</param>
+        /// <param name="result">Routing result containing routed nets.</param>
+        /// <param name="designName">Design name.</param>
+        /// <returns>SES file content.</returns>
+        public static string FromRouting(DsnData dsn, RoutingResult result, string designName)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"(session {designName}.ses");
+            sb.AppendLine($"  (base_design {designName}.dsn)");
+            sb.AppendLine("  (routes");
+            sb.AppendLine($"    (resolution um {dsn.Resolution})");
+            sb.AppendLine("    (parser");
+            sb.AppendLine("      (host_cad \"KRouter\")");
+            sb.AppendLine("      (host_version \"1.0.0\")");
+            sb.AppendLine("    )");
+            sb.AppendLine("    (network");
+            foreach (var n in dsn.Nets)
+            {
+                sb.AppendLine($"      (net {n.Name})");
+            }
+            sb.AppendLine("    )");
+
+            foreach (var net in result.RoutedNets.Where(n => n.Route != null))
+            {
+                sb.AppendLine("    (network_out");
+                sb.AppendLine($"      (net {net.Name}");
+                foreach (var seg in net.Route!.ToSegments())
+                {
+                    sb.AppendLine("        (wire");
+                    sb.AppendLine($"          (path {dsn.Layers.First()} {seg.Width}");
+                    sb.AppendLine($"            {seg.Start.X} {seg.Start.Y} {seg.End.X} {seg.End.Y}");
+                    sb.AppendLine("          )");
+                    sb.AppendLine("        )");
+                }
+                foreach (var via in net.Route.GetVias())
+                {
+                    sb.AppendLine($"        (via \"Via\" {via.Position.X} {via.Position.Y})");
+                }
+                sb.AppendLine("      )");
+                sb.AppendLine("    )");
+            }
+
             sb.AppendLine("  )");
             sb.AppendLine(")");
             return sb.ToString();

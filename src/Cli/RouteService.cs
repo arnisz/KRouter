@@ -63,32 +63,25 @@ namespace KRouter.Cli
                 throw new FileNotFoundException("Input DSN nicht gefunden", request.InputFile.FullName);
 
             var dsnContent = await File.ReadAllTextAsync(request.InputFile.FullName, cancellationToken);
-            var netCount = CountOccurrences(dsnContent, "(net ");
-            if (netCount == 0) netCount = 1; // Minimal
+            var parser = new DsnParser();
+            var dsn = parser.Parse(dsnContent);
 
-            var nets = new List<Net>();
-            for (int i = 0; i < netCount; i++)
+            // Convert parsed nets to engine nets
+            var nets = dsn.Nets.Select((n, idx) => new Net
             {
-                nets.Add(new Net
-                {
-                    Name = $"NET_{i + 1}",
-                    Priority = (netCount - i),
-                    Pins = new List<Point2D>
-                    {
-                        new Point2D(0, i * 200_000),
-                        new Point2D(1_000_000, i * 200_000)
-                    }
-                });
-            }
+                Name = n.Name,
+                Priority = dsn.Nets.Count - idx,
+                Pins = n.Pins
+            }).ToList();
 
-            var bounds = new BoundingBox(new Point2D(-1_000_000, -1_000_000), new Point2D(20_000_000, 20_000_000));
-            var layers = request.Layers.Length == 0 ? new List<string> { "F.Cu", "B.Cu" } : request.Layers.ToList();
+            var bounds = dsn.Boundary;
+            var layers = request.Layers.Length == 0 ? dsn.Layers : request.Layers.ToList();
 
             var result = await _engine.RouteBoard(nets, bounds, request.GridSize, layers, cancellationToken);
 
             // SES schreiben
             var designName = Path.GetFileNameWithoutExtension(request.InputFile.Name);
-            var ses = SpectraSessionGenerator.FromDsn(dsnContent, designName);
+            var ses = SpectraSessionGenerator.FromRouting(dsn, result, designName);
             Directory.CreateDirectory(request.OutputFile.DirectoryName!);
             await File.WriteAllTextAsync(request.OutputFile.FullName, ses, cancellationToken);
 
@@ -111,11 +104,6 @@ namespace KRouter.Cli
             return $"=== Routing Report ===\nStatus: {(r.Success ? "SUCCESS" : "PARTIAL")}\nRouted Nets: {r.RoutedNetCount}\nFailed Nets: {r.FailedNetCount}\nVias: {r.TotalVias}\nTotal Length: {r.TotalLength:F2} internal units\nTime: {r.Elapsed.TotalSeconds:F2}s";
         }
 
-        private static int CountOccurrences(string text, string pattern)
-        {
-            int count = 0; int idx = 0; while ((idx = text.IndexOf(pattern, idx, StringComparison.Ordinal)) != -1) { count++; idx += pattern.Length; }
-            return count;
-        }
     }
 }
 

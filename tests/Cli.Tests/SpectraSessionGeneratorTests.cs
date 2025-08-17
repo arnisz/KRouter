@@ -21,6 +21,26 @@ namespace KRouter.Tests.Cli
             Assert.Contains("(place Q1 1259375 -946750 front 0)", ses);
             Assert.Contains("(net GND", ses);
         }
+
+        [Fact]
+        public void FromRouting_IncludesWireSegments()
+        {
+            var data = new DsnData { Resolution = 10, Layers = new System.Collections.Generic.List<string> { "F.Cu" } };
+            var net = new KRouter.Core.Routing.Net
+            {
+                Name = "N1",
+                Route = new KRouter.Core.Routing.Models.RoutingPath("N1")
+            };
+            net.Route!.Nodes.Add(new KRouter.Core.Routing.Models.RoutingNode(new KRouter.Core.Geometry.Point2D(0, 0), "F.Cu", 0));
+            net.Route.Nodes.Add(new KRouter.Core.Routing.Models.RoutingNode(new KRouter.Core.Geometry.Point2D(1000, 0), "F.Cu", 0));
+            var result = new KRouter.Core.Routing.RoutingResult();
+            result.RoutedNets.Add(net);
+
+            var ses = SpectraSessionGenerator.FromRouting(data, result, "design");
+
+            Assert.Contains("(wire", ses);
+            Assert.Contains("network_out", ses);
+        }
     }
 }
 

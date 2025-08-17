@@ -1,7 +1,14 @@
 using System;
 using System.CommandLine;
+using System.CommandLine.Invocation;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
+using KRouter.Core.Routing;
+using KRouter.Core.Routing.Algorithms;
+using KRouter.Core.DRC;
+using KRouter.Core.DRC.Models;
+using KRouter.Core.Geometry;
 
 namespace KRouter.Cli
 {
@@ -18,6 +25,13 @@ namespace KRouter.Cli
         /// <returns>Exit code.</returns>
         static async Task<int> Main(string[] args)
         {
+            // Manuelle Initialisierung der Abhängigkeiten
+            var ruleEngine = new RuleEngine();
+            ruleEngine.LoadRules(new DesignRules());
+            var routingAlgorithm = new AStarRouter();
+            var routingEngine = new RoutingEngine(routingAlgorithm, ruleEngine);
+            var routeService = new RouteService(routingEngine);
+
             var rootCommand = new RootCommand("KRouter - KiCad PCB Autorouter");
 
             // Route command
@@ -39,14 +53,58 @@ namespace KRouter.Cli
                 "Routing profile (Fast, Balanced, Quality)"
             );
 
+            var gridOption = new Option<long>(
+                "--grid",
+                getDefaultValue: () => 100_000,
+                "Grid size (internal units)"
+            );
+
+            var layersOption = new Option<string[]>(
+                "--layers",
+                getDefaultValue: () => new[] { "F.Cu", "B.Cu" },
+                "Layer list"
+            );
+
+            var jsonOption = new Option<bool>(
+                "--json",
+                description: "Machine readable summary to stdout"
+            );
+
             routeCommand.AddOption(inputOption);
             routeCommand.AddOption(outputOption);
             routeCommand.AddOption(profileOption);
+            routeCommand.AddOption(gridOption);
+            routeCommand.AddOption(layersOption);
+            routeCommand.AddOption(jsonOption);
 
-            routeCommand.SetHandler(async (input, output, profile) =>
+            routeCommand.SetHandler(async (FileInfo input, FileInfo output, string profile, long grid, string[] layers, bool json) =>
             {
-                await RouteBoard(input!, output!, profile!);
-            }, inputOption, outputOption, profileOption);
+                try
+                {
+                    var result = await routeService.RouteAsync(new RouteRequest
+                    {
+                        InputFile = input,
+                        OutputFile = output,
+                        Profile = profile,
+                        GridSize = grid,
+                        Layers = layers,
+                        Json = json
+                    });
+
+                    if (json)
+                    {
+                        Console.WriteLine(result.ToJson());
+                    }
+                    else
+                    {
+                        Console.WriteLine(result.HumanReadableReport);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"Error: {ex.Message}");
+                }
+            }, inputOption, outputOption, profileOption, gridOption, layersOption, jsonOption);
 
             rootCommand.AddCommand(routeCommand);
 
@@ -55,7 +113,7 @@ namespace KRouter.Cli
             versionCommand.SetHandler(() =>
             {
                 Console.WriteLine("KRouter v1.0.0");
-                Console.WriteLine(".NET 8.0 | MIT License");
+                Console.WriteLine($".NET {Environment.Version} | MIT License");
             });
             rootCommand.AddCommand(versionCommand);
 
@@ -63,135 +121,15 @@ namespace KRouter.Cli
             var helpCommand = new Command("help", "Show help information");
             helpCommand.SetHandler(() =>
             {
-                Console.WriteLine(@"
-KRouter - Modern PCB Autorouter for KiCad
-
-Usage:
-  krouter route --in <dsn_file> --out <ses_file> [options]
-  krouter version
-  krouter help
-
-Options:
-  -i, --in <file>       Input DSN file (required)
-  -o, --out <file>      Output SES file (required)
-  -p, --profile <name>  Routing profile: Fast, Balanced, Quality (default: Balanced)
-  -h, --help            Show help and usage information
-
-Examples:
-  krouter route --in board.dsn --out board.ses
-  krouter route -i board.dsn -o board.ses --profile Quality
-
-KiCad Integration:
-  1. Export DSN from KiCad: File → Export → Specctra DSN
-  2. Run: krouter route --in board.dsn --out board.ses
-  3. Import SES to KiCad: File → Import → Specctra Session
-
-For more information, visit: https://github.com/arnisz/krouter
-");
+                Console.WriteLine("Use --help on any command for details. Example: krouter route --help");
             });
             rootCommand.AddCommand(helpCommand);
 
-            return await rootCommand.InvokeAsync(args.Length == 0 ? new[] { "help" } : args);
-        }
-
-        /// <summary>
-        /// Performs a mock routing operation for demonstration purposes.
-        /// </summary>
-        /// <param name="input">Input DSN file.</param>
-        /// <param name="output">Output SES file.</param>
-        /// <param name="profile">Routing profile.</param>
-        private static async Task RouteBoard(FileInfo input, FileInfo output, string profile)
-        {
-            try
+            if (args.Length == 0)
             {
-                Console.WriteLine("KRouter - Starting routing job");
-                Console.WriteLine($"Input:   {input.FullName}");
-                Console.WriteLine($"Output:  {output.FullName}");
-                Console.WriteLine($"Profile: {profile}");
-                Console.WriteLine();
-
-                if (!input.Exists)
-                {
-                    Console.Error.WriteLine($"Error: Input file not found: {input.FullName}");
-                    Environment.Exit(1);
-                }
-
-                // For now, create a simple demonstration
-                // In the full implementation, this would call the routing engine
-
-                Console.Write("Loading design file... ");
-                await Task.Delay(500); // Simulate loading
-                Console.WriteLine("Done");
-
-                // Read DSN file
-                var dsnContent = await File.ReadAllTextAsync(input.FullName);
-
-                // Extract basic info (simplified)
-                var netCount = CountOccurrences(dsnContent, "(net ");
-                var componentCount = CountOccurrences(dsnContent, "(place ");
-
-                Console.WriteLine($"Design: {input.Name.Replace(".dsn", "")}");
-                Console.WriteLine($"Nets: {netCount}, Components: {componentCount}");
-                Console.WriteLine();
-
-                // Simulate routing progress
-                var steps = profile switch
-                {
-                    "Fast" => 5,
-                    "Quality" => 20,
-                    _ => 10
-                };
-
-                for (int i = 1; i <= steps; i++)
-                {
-                    Console.Write($"\rRouting progress: [{new string('#', i)}{new string(' ', steps - i)}] {i * 100 / steps}%");
-                    await Task.Delay(200);
-                }
-                Console.WriteLine();
-                Console.WriteLine();
-
-                // Generate KiCad-compatible SES output
-                var sesContent = GenerateKiCadCompatibleSES(input.Name.Replace(".dsn", ""), netCount);
-                await File.WriteAllTextAsync(output.FullName, sesContent);
-
-                // Report results
-                Console.WriteLine("=== Routing Results ===");
-                Console.WriteLine("Status: SUCCESS");
-                Console.WriteLine("Success Rate: 100%");
-                Console.WriteLine($"Routed Nets: {netCount}");
-                Console.WriteLine("Failed Nets: 0");
-                Console.WriteLine($"Total Vias: {netCount * 2}");
-                Console.WriteLine($"Total Length: {netCount * 45.5:F1} mm");
-                Console.WriteLine($"Time: {steps * 0.2:F1} seconds");
-                Console.WriteLine();
-                Console.WriteLine($"Output saved to: {output.FullName}");
-                Console.WriteLine();
-                Console.WriteLine("Next step: Import the SES file back to KiCad");
-                Console.WriteLine("  File → Import → Specctra Session...");
+                args = new[] { "help" };
             }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"Error: {ex.Message}");
-                Environment.Exit(1);
-            }
-        }
-
-        /// <summary>
-        /// Counts occurrences of a pattern in a given text.
-        /// </summary>
-        /// <param name="text">The text to search.</param>
-        /// <param name="pattern">Pattern to find.</param>
-        /// <returns>Number of occurrences.</returns>
-        private static int CountOccurrences(string text, string pattern)
-        {
-            int count = 0;
-            int index = 0;
-            while ((index = text.IndexOf(pattern, index)) != -1)
-            {
-                count++;
-                index += pattern.Length;
-            }
-            return count;
+            return await rootCommand.InvokeAsync(args);
         }
 
         /// <summary>
@@ -202,40 +140,7 @@ For more information, visit: https://github.com/arnisz/krouter
         /// <returns>SES file content.</returns>
         internal static string GenerateKiCadCompatibleSES(string designName, int netCount)
         {
-            return $@"(session ""{designName}.ses""
-  (base_design ""{designName}.dsn"")
-  (placement
-    (resolution mm 1000000)
-  )
-  (routing
-    (resolution mm 1000000)
-    (parser
-      (host_cad ""KRouter"")
-      (host_version ""1.0.0"")
-    )
-    (library
-      (padstack ""Via[0-1]_600:300_um""
-        (shape (circle F.Cu 600 0 0))
-        (shape (circle B.Cu 600 0 0))
-        (attach off)
-      )
-    )
-    (network
-      (net ""GND""
-        (wire
-          (path F.Cu 250
-            50000 75000
-            80000 75000
-          )
-          (type protect)
-        )
-      )
-      (via ""Via[0-1]_600:300_um"" 100000 75000
-        (net ""VCC"")
-      )
-    )
-  )
-)";
+            return $"(session \"{designName}.ses\"\n  (base_design \"{designName}.dsn\")\n  (placement\n    (resolution mm 1000000)\n  )\n  (routing\n    (resolution mm 1000000)\n    (parser\n      (host_cad \"KRouter\")\n      (host_version \"1.0.0\")\n    )\n    (library\n      (padstack \"Via[0-1]_600:300_um\"\n        (shape (circle F.Cu 600 0 0))\n        (shape (circle B.Cu 600 0 0))\n        (attach off)\n      )\n    )\n    (network\n      (net \"GND\"\n        (wire\n          (path F.Cu 250\n            50000 75000\n            80000 75000\n          )\n          (type protect)\n        )\n      )\n      (via \"Via[0-1]_600:300_um\" 100000 75000\n        (net \"VCC\")\n      )\n    )\n  )\n)";
         }
     }
 }

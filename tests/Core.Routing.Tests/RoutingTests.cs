@@ -27,7 +27,7 @@ namespace KRouter.Tests.Core.Routing
             var path = router.FindPath(start, end, graph, costFunction);
 
             Assert.NotNull(path);
-            Assert.True(path!.Nodes.Count > 0);
+            Assert.NotEmpty(path!.Nodes);
             Assert.Equal(start, path.Nodes.First());
             Assert.Equal(end, path.Nodes.Last());
         }

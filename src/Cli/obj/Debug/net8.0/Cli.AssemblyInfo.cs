@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("krouter")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ce665746012b2d9c34408467e79430a3afc3895e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f7107ca480a59bbeea7a5fc11d177f7bdc716752")]
 [assembly: System.Reflection.AssemblyProductAttribute("krouter")]
 [assembly: System.Reflection.AssemblyTitleAttribute("krouter")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

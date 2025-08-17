@@ -43,6 +43,8 @@ namespace KRouter.Tests.Cli
             Assert.True(File.Exists(output));
             Assert.Contains("Routing Report", response.HumanReadableReport);
             Assert.NotEmpty(response.ToJson());
+            var sesContent = await File.ReadAllTextAsync(output);
+            Assert.Contains("(routes", sesContent);
         }
     }
 }

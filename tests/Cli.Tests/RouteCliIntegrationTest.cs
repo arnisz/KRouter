@@ -14,7 +14,7 @@ namespace KRouter.Tests.Cli
             // Arrange
             var projectRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../.."));
             var cliProject = Path.Combine(projectRoot, "src", "Cli", "Cli.csproj");
-            var dsnPath = Path.Combine(projectRoot, "tests", "TESTUS.dsn");
+            var dsnPath = Path.Combine(projectRoot, "samples", "boards", "example.dsn");
             var tempDir = Path.Combine(Path.GetTempPath(), "krouter_cli_test", Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(tempDir);
             var sesPath = Path.Combine(tempDir, "out.ses");
@@ -56,8 +56,8 @@ namespace KRouter.Tests.Cli
             Assert.True(proc.ExitCode == 0, $"CLI exit code: {proc.ExitCode}\nSTDOUT:\n{stdout}\nSTDERR:\n{stderr}");
             Assert.True(File.Exists(sesPath), $"SES-File nicht erzeugt: {sesPath}\nSTDOUT:\n{stdout}\nSTDERR:\n{stderr}");
             var sesContent = await File.ReadAllTextAsync(sesPath);
-            Assert.Contains("(routing", sesContent);
-            Assert.Contains("(network", sesContent);
+            Assert.Contains("(routes", sesContent);
+            Assert.Contains("(net GND", sesContent);
         }
     }
 }

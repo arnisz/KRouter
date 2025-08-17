@@ -87,7 +87,8 @@ namespace KRouter.Cli
             var result = await _engine.RouteBoard(nets, bounds, request.GridSize, layers, cancellationToken);
 
             // SES schreiben
-            var ses = Program.GenerateKiCadCompatibleSES(request.InputFile.Name.Replace(".dsn", string.Empty), nets.Count);
+            var designName = Path.GetFileNameWithoutExtension(request.InputFile.Name);
+            var ses = SpectraSessionGenerator.FromDsn(dsnContent, designName);
             Directory.CreateDirectory(request.OutputFile.DirectoryName!);
             await File.WriteAllTextAsync(request.OutputFile.FullName, ses, cancellationToken);
 
